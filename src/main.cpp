@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
   GLVAO squareVao = createSquare();
 
-  GLVAO crate = CGL::loadWavefrontObj("awesome_ship.obj");
+  GLVAO crate = CGL::loadWavefrontObj("cool_ship.obj");
 
   Model crateModel(crate);
 
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
   player.setColour(1.0f, 0.5f, 0.0f);
 
   GLuint textureId = CGL::loadTexture("crate.png");
-  GLuint crate2 = CGL::loadTexture("awesome_ship.png");
+  GLuint crate2 = CGL::loadTexture("cool_ship.png");
   
   while(!glfwWindowShouldClose(window))
   {

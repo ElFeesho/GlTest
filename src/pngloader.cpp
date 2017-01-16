@@ -54,12 +54,21 @@ Texture textureData(const std::string &file) {
 
     unsigned char *rgbdata = new unsigned char[(width*3)*height];
 
+    int pixelStride = 3;
+    if (png_get_channels(png_ptr, info_ptr) == 4)
+    {
+        pixelStride = 4;
+        printf("RGBA DETECTED\n");
+    }
+
     int p = 0;
     for(int i = 0; i < height; i++)
     {
-    	for(int j = 0; j < width * 3; j++)
+    	for(int j = 0; j < width * pixelStride; j+=pixelStride)
     	{
-    		rgbdata[p++] = row_pointers[i][j];
+            rgbdata[p++] = row_pointers[i][j];
+            rgbdata[p++] = row_pointers[i][j+1];
+            rgbdata[p++] = row_pointers[i][j+2];
     	}
     }
 
