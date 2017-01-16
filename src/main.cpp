@@ -42,7 +42,7 @@ GLVAO createSquare() {
 
       GLuint indices[] = {
     	  0, 1, 2,
-    	  2, 3, 1
+    	  3, 2, 1
       };
       
       CGL::createBuffer<float, 12>(GL_ARRAY_BUFFER, vertices);
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
   GLVAO squareVao = createSquare();
 
-  GLVAO crate = CGL::loadWavefrontObj("crate.obj");
+  GLVAO crate = CGL::loadWavefrontObj("awesome_ship.obj");
 
   Model crateModel(crate);
 
@@ -98,11 +98,12 @@ int main(int argc, char **argv)
   floorModel = glm::rotate(glm::mat4(1.0f), (float)M_PI/2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
   // floorModel = glm::scale(floorModel, glm::vec3(20.0f, 20.0f, 1.0f));
-  floorModel = glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
+  floorModel = glm::rotate(glm::mat4(1.0f), -glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
   floorModel = glm::scale(floorModel, glm::vec3(20.0f, 20.0f, 1.0f));
 
 
   glm::mat4 crateTransform = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 1.0f, 3.0f));
+  crateTransform = glm::scale(crateTransform, glm::vec3(0.5f, 0.5f, 0.5f));
   crateModel.setMatrix(crateTransform);
 
   floor.setMatrix(floorModel);
@@ -112,18 +113,18 @@ int main(int argc, char **argv)
   player.setColour(1.0f, 0.5f, 0.0f);
 
   GLuint textureId = CGL::loadTexture("crate.png");
-  GLuint crate2 = CGL::loadTexture("crate_tex.png");
+  GLuint crate2 = CGL::loadTexture("awesome_ship.png");
   
   while(!glfwWindowShouldClose(window))
   {
     if (glfwGetKey(window, GLFW_KEY_A)==GLFW_PRESS)
     {
-      rotation -= 0.1f;
+      rotation -= 0.05f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_D)==GLFW_PRESS)
     {
-      rotation += 0.1f;
+      rotation += 0.05f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_W)==GLFW_PRESS)

@@ -68,6 +68,8 @@ namespace CGL {
     glfwGetFramebufferSize(window, &w, &h);
     glViewport(0.0f, 0.0f, w, h);
 
+    glEnable(GL_CULL_FACE);
+
     return window;
   }
 
@@ -198,6 +200,30 @@ namespace CGL {
     }
   }
 
+  void transferModelData(int vertexPos, int normalPos, int texelPos,
+      std::vector<float> &rawVertices, std::vector<float> &rawNormals, std::vector<float> &rawTexels, 
+      std::vector<float> &orderedVertices, std::vector<float> &orderedNormals, std::vector<float> &orderedTexels) {
+    int vposStart = vertexPos * 3;
+    int vposEnd = vposStart + 3;
+
+    std::copy(
+      rawVertices.begin() + vposStart, 
+      rawVertices.begin() + vposEnd, 
+      std::back_inserter(orderedVertices));
+    
+    int tpos = texelPos;
+    orderedTexels.push_back(rawTexels[tpos*2]);
+    orderedTexels.push_back(1.0f-rawTexels[tpos*2+1]);
+    
+    int nposStart = normalPos * 3;
+    int nposEnd = nposStart + 3;
+
+    std::copy(
+      rawNormals.begin() + nposStart, 
+      rawNormals.begin() + nposEnd, 
+      std::back_inserter(orderedNormals));
+  }
+
   GLVAO loadWavefrontObj(const std::string &file)
   {
     std::string contents = readFile(file);
@@ -244,62 +270,27 @@ namespace CGL {
       std::string components = faceLine.substr(2);
       std::vector<std::string> faceComps = splitString(components, ' ');
 
-      assert(faceComps.size() == 3);
-
       std::vector<std::string> firstFace = splitString(faceComps[0], '/');
       std::vector<std::string> secondFace = splitString(faceComps[1], '/');
       std::vector<std::string> thirdFace = splitString(faceComps[2], '/');
 
-      int vpos = std::stol(firstFace[0])-1;
-      
-      orderedVertices.push_back(rawVertices[vpos*3 + 0]);
-      orderedVertices.push_back(rawVertices[vpos*3 + 1]);
-      orderedVertices.push_back(rawVertices[vpos*3 + 2]);
-      
-      int tpos = std::stol(firstFace[1])-1;
-      orderedTexels.push_back(rawTexels[tpos*2 + 0]);
-      orderedTexels.push_back(rawTexels[tpos*2 + 1]);
-
-      int npos = std::stol(firstFace[2])-1;
-      orderedNormals.push_back(rawNormals[npos*3 + 0]);
-      orderedNormals.push_back(rawNormals[npos*3 + 1]);
-      orderedNormals.push_back(rawNormals[npos*3 + 2]);
+      transferModelData(std::stol(firstFace[0])-1, std::stol(firstFace[2])-1, std::stol(firstFace[1])-1,
+        rawVertices, rawNormals, rawTexels,
+        orderedVertices, orderedNormals, orderedTexels);
 
       indices.push_back(index);
       index++;
 
-      vpos = std::stol(secondFace[0])-1;
-      tpos = std::stol(secondFace[1])-1;
-      npos = std::stol(secondFace[2])-1;
-      
-      orderedVertices.push_back(rawVertices[vpos*3 + 0]);
-      orderedVertices.push_back(rawVertices[vpos*3 + 1]);
-      orderedVertices.push_back(rawVertices[vpos*3 + 2]);
-      
-      orderedTexels.push_back(rawTexels[tpos*2 + 0]);
-      orderedTexels.push_back(rawTexels[tpos*2 + 1]);
-
-      orderedNormals.push_back(rawNormals[npos*3 + 0]);
-      orderedNormals.push_back(rawNormals[npos*3 + 1]);
-      orderedNormals.push_back(rawNormals[npos*3 + 2]);
+      transferModelData(std::stol(secondFace[0])-1, std::stol(secondFace[2])-1, std::stol(secondFace[1])-1,
+        rawVertices, rawNormals, rawTexels,
+        orderedVertices, orderedNormals, orderedTexels);
 
       indices.push_back(index);
       index++;
 
-      vpos = std::stol(thirdFace[0])-1;
-      tpos = std::stol(thirdFace[1])-1;
-      npos = std::stol(thirdFace[2])-1;
-      
-      orderedVertices.push_back(rawVertices[vpos*3 + 0]);
-      orderedVertices.push_back(rawVertices[vpos*3 + 1]);
-      orderedVertices.push_back(rawVertices[vpos*3 + 2]);
-      
-      orderedTexels.push_back(rawTexels[tpos*2 + 0]);
-      orderedTexels.push_back(rawTexels[tpos*2 + 1]);
-
-      orderedNormals.push_back(rawNormals[npos*3 + 0]);
-      orderedNormals.push_back(rawNormals[npos*3 + 1]);
-      orderedNormals.push_back(rawNormals[npos*3 + 2]);
+      transferModelData(std::stol(thirdFace[0])-1, std::stol(thirdFace[2])-1, std::stol(thirdFace[1])-1,
+        rawVertices, rawNormals, rawTexels,
+        orderedVertices, orderedNormals, orderedTexels);
 
       indices.push_back(index);
       index++;
