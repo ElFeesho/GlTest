@@ -101,6 +101,10 @@ int main(int argc, char **argv)
   floorModel = glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
   floorModel = glm::scale(floorModel, glm::vec3(20.0f, 20.0f, 1.0f));
 
+
+  glm::mat4 crateTransform = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 1.0f, 3.0f));
+  crateModel.setMatrix(crateTransform);
+
   floor.setMatrix(floorModel);
 
   floor.setColour(0.0f, 1.0f, 0.5f);
@@ -108,6 +112,7 @@ int main(int argc, char **argv)
   player.setColour(1.0f, 0.5f, 0.0f);
 
   GLuint textureId = CGL::loadTexture("crate.png");
+  GLuint crate2 = CGL::loadTexture("crate_tex.png");
   
   while(!glfwWindowShouldClose(window))
   {
@@ -143,10 +148,12 @@ int main(int argc, char **argv)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    floor.draw(shader, projectionMatrix, viewMatrix);
+    floor.draw(shader, projectionMatrix, viewMatrix, centre);
     glBindTexture(GL_TEXTURE_2D, textureId);
-    player.draw(texturedShader, projectionMatrix, viewMatrix);
-    crateModel.draw(texturedShader, projectionMatrix, viewMatrix);
+
+    player.draw(texturedShader, projectionMatrix, viewMatrix, centre);
+    glBindTexture(GL_TEXTURE_2D, crate2);
+    crateModel.draw(texturedShader, projectionMatrix, viewMatrix, centre);
 
     CGL::error(__FILE__, __LINE__);
 

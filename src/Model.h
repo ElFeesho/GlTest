@@ -33,7 +33,7 @@ public:
 
 	void setColour(float r, float g, float b);
 
-	void draw(GLuint shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix);
+	void draw(GLuint shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos);
 
 private:
 	GLVAO _vao;

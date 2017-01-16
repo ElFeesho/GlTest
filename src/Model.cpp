@@ -30,14 +30,14 @@ void Model::setColour(float r, float g, float b)
   _colour.z = b;
 }
 
-void Model::draw(GLuint shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
+void Model::draw(GLuint shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos) {
 
   GLuint colour = glGetUniformLocation(shader, "colour");
   GLuint texture = glGetUniformLocation(shader, "boundTexture");
   GLuint projection = glGetUniformLocation(shader, "projection");
   GLuint view = glGetUniformLocation(shader, "view");
   GLuint model = glGetUniformLocation(shader, "model");
-
+  GLuint lightPosPos = glGetUniformLocation(shader, "lightPos");
   glUseProgram(shader);
   _vao.use([=](){
     
@@ -47,7 +47,13 @@ void Model::draw(GLuint shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix
     if (texture != -1){
       glUniform1i(texture, 0);
     }
+    if (lightPosPos != -1)
+    {
+      glUniform3f(lightPosPos, lightPos.x, lightPos.y+0.5f, lightPos.z);
+    }
     
+
+
     glUniformMatrix4fv(projection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
     glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(_matrix));

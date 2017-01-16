@@ -326,7 +326,6 @@ namespace CGL {
       index++;
     }
 
-
     GLVAO vao(indices.size());
 
     vao.use([&]{
