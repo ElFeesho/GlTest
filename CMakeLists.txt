@@ -15,9 +15,22 @@ set(SOURCES
 	src/GLVAO.h)
 
 find_package(glfw3)
+find_package(PNG)
+find_package(OpenGL)
+
+find_package(GLEW)
 
 add_executable(gltest ${SOURCES})
 
+include_directories(/usr/local/include ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS})
+
 target_compile_features(gltest PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_uniform_initialization)
 
-target_link_libraries(gltest ${GLFW3_LIBRARY} GL GLEW png)
+if (DEFINED GLFW3_LIBRARY)
+	message("Found GLFW3 Library")
+else (DEFINED GLFW3_LIBRARY)
+	message("Could not find GLFW3 Library, assuming it is just 'glfw'")
+	set(GLFW3_LIBRARY glfw)
+endif(DEFINED GLFW3_LIBRARY)
+
+target_link_libraries(gltest ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${PNG_LIBRARIES})

@@ -19,8 +19,6 @@
 #define GLVAO_H
 
 #include <GL/glew.h>
-#include <GL/glext.h>
-#include <GL/gl.h>
 
 #include <functional>
 
