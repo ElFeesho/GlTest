@@ -187,6 +187,17 @@ namespace CGL {
     });
   }
 
+  void extractFloats(const std::string &source, int numberOfFloats, std::vector<float> &destination)
+  {
+    std::stringstream floatSource(source);
+    for(int i = 0; i < numberOfFloats; i++)
+    {
+      float val;
+      floatSource >> val;
+      destination.push_back(val);
+    }
+  }
+
   GLVAO loadWavefrontObj(const std::string &file)
   {
     std::string contents = readFile(file);
@@ -209,44 +220,17 @@ namespace CGL {
 
     for (std::string vertLine : vertexLines)
     {
-      std::stringstream vertexComponents(vertLine.substr(2));
-      float x;
-      float y;
-      float z;
-      vertexComponents >> x;
-      vertexComponents >> y;
-      vertexComponents >> z;
-
-      rawVertices.push_back(x);
-      rawVertices.push_back(y);
-      rawVertices.push_back(z);
+      extractFloats(vertLine.substr(2), 3, rawVertices);
     }
 
     for (std::string normalLine : normalLines)
     {
-      std::stringstream normalComponents(normalLine.substr(3));
-      float x;
-      float y;
-      float z;
-      normalComponents >> x;
-      normalComponents >> y;
-      normalComponents >> z;
-
-      rawNormals.push_back(x);
-      rawNormals.push_back(y);
-      rawNormals.push_back(z);
+      extractFloats(normalLine.substr(3), 3, rawNormals);
     }
 
     for (std::string texelLine : texelLines)
     {
-      std::stringstream texelComponents(texelLine.substr(3));
-      float x;
-      float y;
-      texelComponents >> x;
-      texelComponents >> y;
-
-      rawTexels.push_back(x);
-      rawTexels.push_back(y);
+      extractFloats(texelLine.substr(3), 2, rawTexels);
     }
 
     std::vector<float> orderedVertices;
@@ -267,16 +251,16 @@ namespace CGL {
       std::vector<std::string> thirdFace = splitString(faceComps[2], '/');
 
       int vpos = std::stol(firstFace[0])-1;
-      int tpos = std::stol(firstFace[1])-1;
-      int npos = std::stol(firstFace[2])-1;
       
       orderedVertices.push_back(rawVertices[vpos*3 + 0]);
       orderedVertices.push_back(rawVertices[vpos*3 + 1]);
       orderedVertices.push_back(rawVertices[vpos*3 + 2]);
       
+      int tpos = std::stol(firstFace[1])-1;
       orderedTexels.push_back(rawTexels[tpos*2 + 0]);
       orderedTexels.push_back(rawTexels[tpos*2 + 1]);
 
+      int npos = std::stol(firstFace[2])-1;
       orderedNormals.push_back(rawNormals[npos*3 + 0]);
       orderedNormals.push_back(rawNormals[npos*3 + 1]);
       orderedNormals.push_back(rawNormals[npos*3 + 2]);
