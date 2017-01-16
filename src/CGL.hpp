@@ -66,7 +66,6 @@ namespace CGL {
 
     int w, h;
     glfwGetFramebufferSize(window, &w, &h);
-    std::cout << "W: " << w << " H: " << h << std::endl;
     glViewport(0.0f, 0.0f, w, h);
 
     return window;
@@ -151,9 +150,7 @@ namespace CGL {
 
   GLuint loadTexture(const std::string &pngFile){
     Texture texture = textureData(pngFile);
-    
-    std::cout << "Loaded texture " << texture.width << " x " << texture.height << std::endl;
-    
+        
     GLuint textureId;
     glGenTextures(1, &textureId);
     glActiveTexture(GL_TEXTURE0);
@@ -219,8 +216,6 @@ namespace CGL {
       vertexComponents >> x;
       vertexComponents >> y;
       vertexComponents >> z;
-
-      std::cout << "Read vertex " << x << " " << y << " " << z << std::endl;
 
       rawVertices.push_back(x);
       rawVertices.push_back(y);

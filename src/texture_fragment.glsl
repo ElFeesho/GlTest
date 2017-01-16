@@ -9,7 +9,7 @@ out vec4 frag_colour;
 
 void main() {
 	
-	float ambient = 0.5f;
+	float ambient = 0.9f;
 	vec3 norm = normalize(onormal.xyz);
 	vec3 lightDir = normalize(lightPos - fragPos);  
 	float diff = max(dot(norm, lightDir), 0.0);

@@ -63,6 +63,8 @@ Texture textureData(const std::string &file) {
     	}
     }
 
+    png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+
     Texture textureData;
     textureData.data = rgbdata;
     textureData.width = width;
