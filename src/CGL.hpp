@@ -68,7 +68,9 @@ namespace CGL {
     glfwGetFramebufferSize(window, &w, &h);
     glViewport(0.0f, 0.0f, w, h);
 
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+
 
     return window;
   }

@@ -54,13 +54,8 @@ Texture textureData(const std::string &file) {
 
     unsigned char *rgbdata = new unsigned char[(width*3)*height];
 
-    int pixelStride = 3;
-    if (png_get_channels(png_ptr, info_ptr) == 4)
-    {
-        pixelStride = 4;
-        printf("RGBA DETECTED\n");
-    }
-
+    int pixelStride = png_get_channels(png_ptr, info_ptr);
+    
     int p = 0;
     for(int i = 0; i < height; i++)
     {

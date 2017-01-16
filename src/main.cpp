@@ -66,8 +66,6 @@ int main(int argc, char **argv)
 
   glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
-  glEnable(GL_DEPTH_TEST);
-
   CGL::error(__FILE__, __LINE__);
 
   int shader = CGL::compileShaderProgram("src/vertex.glsl", "src/fragment.glsl");
@@ -137,6 +135,16 @@ int main(int argc, char **argv)
     {
       eye.x -= cos(rotation)*0.1f;
       eye.z -= sin(rotation)*0.1f;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS)
+    {
+      eye.y += 0.1f;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_Z)==GLFW_PRESS)
+    {
+      eye.y -= 0.1f;
     }
 
     centre.x = eye.x + cos(rotation);
