@@ -25,9 +25,12 @@
 class GLVAO
 {
 public:
-  GLVAO();
+  GLVAO(GLuint vertexCount);
   void use(std::function<void()> action);
+
+  GLuint vertexCount();
 private:
+  GLuint _vertexCount;
   GLuint _vao;
 };
 

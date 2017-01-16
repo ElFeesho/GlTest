@@ -27,7 +27,7 @@
 
 class Model {
 public:
-	Model(GLVAO vao, GLuint vertexCount);
+	Model(GLVAO vao);
 
 	void setMatrix(glm::mat4 matrix);
 

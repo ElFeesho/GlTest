@@ -16,36 +16,46 @@
 #include "Model.h"
 
 GLVAO createSquare() {
-    GLVAO vao = CGL::createVAO();
+    GLVAO vao = CGL::createVAO(6);
     
     vao.use([]() {
       float vertices[] = {
-	0.0f, 0.0f,		0.0f,
-	1.0f, 0.0f, 		0.0f,
-	0.0f, 1.0f, 		0.0f,
-	1.0f, 1.0f, 		0.0f
+        0.0f, 0.0f,     0.0f,
+        1.0f, 0.0f,     0.0f,
+        0.0f, 1.0f,     0.0f,
+        1.0f, 1.0f,     0.0f
+      };
+
+      float normals[] = {
+        0.0f, 0.0f,     1.0f,
+        0.0f, 0.0f,     1.0f,
+        0.0f, 0.0f,     1.0f,
+        0.0f, 0.0f,     1.0f
       };
       
       float texels[] = {
-	0.0f, 0.0f,
-	1.0f, 0.0f,
-	0.0f, 1.0f,
-	1.0f, 1.0f
+      	0.0f, 0.0f,
+      	1.0f, 0.0f,
+      	0.0f, 1.0f,
+      	1.0f, 1.0f
       };
 
       GLuint indices[] = {
-	  0, 1, 2,
-	  2, 3, 1
+    	  0, 1, 2,
+    	  2, 3, 1
       };
       
       CGL::createBuffer<float, 12>(GL_ARRAY_BUFFER, vertices);
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+      CGL::createBuffer<float, 12>(GL_ARRAY_BUFFER, normals);
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
       CGL::createBuffer<float, 8>(GL_ARRAY_BUFFER, texels);
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
       
       CGL::createBuffer<GLuint, 6>(GL_ELEMENT_ARRAY_BUFFER, indices);
       glEnableVertexAttribArray(0);
       glEnableVertexAttribArray(1);
+      glEnableVertexAttribArray(2);
     });
     return vao;
 }
@@ -77,8 +87,12 @@ int main(int argc, char **argv)
 
   GLVAO squareVao = createSquare();
 
-  Model player(squareVao, 6);
-  Model floor(squareVao, 6);
+  GLVAO crate = CGL::loadWavefrontObj("crate.obj");
+
+  Model crateModel(crate);
+
+  Model player(squareVao);
+  Model floor(squareVao);
   glm::mat4 floorModel;
 
   floorModel = glm::rotate(glm::mat4(1.0f), (float)M_PI/2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -132,6 +146,7 @@ int main(int argc, char **argv)
     floor.draw(shader, projectionMatrix, viewMatrix);
     glBindTexture(GL_TEXTURE_2D, textureId);
     player.draw(texturedShader, projectionMatrix, viewMatrix);
+    crateModel.draw(texturedShader, projectionMatrix, viewMatrix);
 
     CGL::error(__FILE__, __LINE__);
 

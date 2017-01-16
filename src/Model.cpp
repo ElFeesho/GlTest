@@ -17,7 +17,7 @@
 
 #include "Model.h"
 
-Model::Model(GLVAO vao, GLuint vertexCount) : _vao(vao), _vertexCount(vertexCount), _colour(1.0f, 1.0f, 1.0f, 1.0f) {}
+Model::Model(GLVAO vao) : _vao(vao), _vertexCount(vao.vertexCount()), _colour(1.0f, 1.0f, 1.0f, 1.0f) {}
 
 void Model::setMatrix(glm::mat4 matrix) {
   _matrix = matrix;
@@ -52,6 +52,6 @@ void Model::draw(GLuint shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix
     glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(_matrix));
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_TRIANGLES, _vao.vertexCount(), GL_UNSIGNED_INT, (void*)0);
   });
 }

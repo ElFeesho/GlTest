@@ -17,7 +17,7 @@
 
 #include "GLVAO.h"
 
-GLVAO::GLVAO() {
+GLVAO::GLVAO(GLuint vertexCount) : _vertexCount{vertexCount} {
     glGenVertexArrays(1, &_vao);
 }
 
@@ -26,4 +26,8 @@ void GLVAO::use(std::function<void()> action)
   glBindVertexArray(_vao);
   action();
   glBindVertexArray(0);
+}
+
+GLuint GLVAO::vertexCount() {
+	return _vertexCount;
 }
