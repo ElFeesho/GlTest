@@ -22,6 +22,10 @@ void GLShader::locateUniform(std::string &uniformName) {
 	_uniformLocations[uniformName] = glGetUniformLocation(_shaderId, uniformName.c_str());
 }
 
+void GLShader::setUniform(const std::string &uniformName, glm::vec3 value){
+	glUniform3fv(_uniformLocations[uniformName], 1, glm::value_ptr(value));
+}
+
 void GLShader::setUniform(const std::string &uniformName, glm::vec4 value){
 	glUniform4fv(_uniformLocations[uniformName], 1, glm::value_ptr(value));
 }

@@ -16,6 +16,7 @@ public:
 
 	void locateUniforms(std::vector<std::string> uniformNames);
 
+	void setUniform(const std::string &uniformName, glm::vec3 value);
 	void setUniform(const std::string &uniformName, glm::vec4 value);
 	void setUniform(const std::string &uniformName, glm::mat4 value);
 	void setUniform(const std::string &uniformName, float x, float y, float z);

@@ -28,13 +28,14 @@ namespace CGL {
 
     errorMap[GL_INVALID_ENUM] = "GL_INVALID_ENUM";
     errorMap[GL_INVALID_VALUE] = "GL_INVALID_VALUE";
+    errorMap[GL_INVALID_OPERATION] = "GL_INVALID_OPERATION";
     errorMap[GL_STACK_OVERFLOW] = "GL_STACK_OVERFLOW";
     errorMap[GL_STACK_UNDERFLOW] = "GL_STACK_UNDERFLOW";
     errorMap[GL_OUT_OF_MEMORY] = "GL_OUT_OF_MEMORY";
     
     GLuint error = GL_NO_ERROR;
     while((error = glGetError()) != GL_NO_ERROR) {
-      std::cerr << "Error ("<<name <<":" << line << "): (" << std::hex << error << std::dec << ") " << errorMap[error] << std::endl;
+      std::cerr << "Error ("<< name <<":" << line << "): (" << std::hex << error << std::dec << ") " << errorMap[error] << std::endl;
       throw std::domain_error("GL error occurred");
     }
   }
@@ -103,9 +104,8 @@ namespace CGL {
     glAttachShader(shaderProgram, fragmentId);
     glAttachShader(shaderProgram, vertexId);
 
-    glBindAttribLocation(shaderProgram, 0, "position");
-
     glLinkProgram(shaderProgram);
+    error(__FILE__, __LINE__);
 
     GLint success;
     GLchar infoLog[512];
@@ -126,18 +126,8 @@ namespace CGL {
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexProgram);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentProgram);;
-
+    error(__FILE__, __LINE__);
     return GLShader(linkShaderProgram(vertexShader, fragmentShader));
-  }
-
-  template<typename type, unsigned int count>
-  GLuint createBuffer(GLuint bufferType, type elements[])
-  {
-    GLuint buf;		
-    glGenBuffers(1, &buf);
-    glBindBuffer(bufferType, buf);
-    glBufferData(bufferType, sizeof(type)*count, elements, GL_STATIC_DRAW);
-    return buf;
   }
 
   template<typename type>
