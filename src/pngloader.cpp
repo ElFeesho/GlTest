@@ -44,7 +44,6 @@ Texture textureData(const std::string &file) {
 
     png_init_io(png_ptr, texture);
 
-
     png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
     int width = png_get_image_width(png_ptr, info_ptr);
@@ -52,18 +51,18 @@ Texture textureData(const std::string &file) {
 
     png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
 
-    unsigned char *rgbdata = new unsigned char[(width*3)*height];
-
     int pixelStride = png_get_channels(png_ptr, info_ptr);
-    
+    unsigned char *rgbdata = new unsigned char[(width*pixelStride)*height];    
+
     int p = 0;
     for(int i = 0; i < height; i++)
     {
     	for(int j = 0; j < width * pixelStride; j+=pixelStride)
     	{
-            rgbdata[p++] = row_pointers[i][j];
-            rgbdata[p++] = row_pointers[i][j+1];
-            rgbdata[p++] = row_pointers[i][j+2];
+            for (int k = 0; k < pixelStride; k++)
+            {
+                rgbdata[p++] = row_pointers[i][j+k];
+            }
     	}
     }
 
@@ -73,6 +72,6 @@ Texture textureData(const std::string &file) {
     textureData.data = rgbdata;
     textureData.width = width;
     textureData.height = height;
-    
+    textureData.format = pixelStride;
     return textureData;
 }

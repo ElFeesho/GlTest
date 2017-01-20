@@ -5,7 +5,7 @@
 
 class GLTexture {
 public:
-	GLTexture(unsigned char *data, int width, int height);
+	GLTexture(unsigned char *data, int width, int height, bool alpha = false);
 	void bind(int textureNumber);
 
 private:

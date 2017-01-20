@@ -38,7 +38,6 @@ void Model::setScale(float scale) {
   _scale = scale;
 }
 
-
 void Model::draw(GLShader &shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos) {
 
   _matrix = glm::translate(glm::mat4(1.0f), _position);

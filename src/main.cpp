@@ -32,16 +32,18 @@ int main(int argc, char **argv)
   glm::mat4 projectionMatrix = glm::perspective(20.f, 4.0f/3.0f, 0.1f, 100.0f);
   glm::mat4 viewMatrix;
   
-  glm::vec3 eye(0.0f, 0.5f, 1.0f);
+  glm::vec3 eye(0.0f, 0.5f, 0.0f);
   glm::vec3 centre(0.0f, 0.0f, 0.0f);
 
-  float rotation = 0.0f;
+  float rotation = M_PI_2;
 
-  GLVAO crate = CGL::loadWavefrontObj("cool_ship.obj");
-  Model crateModel(crate);
+  GLVAO ship = CGL::loadWavefrontObj("cool_ship.obj");
+  Model shipModel(ship);
 
   GLTexture shipTexture = CGL::loadTexture("cool_ship.png");
-  
+
+  shipModel.setPosition(0.0f, 0.0f, 15.0f);
+
   while(!glfwWindowShouldClose(window))
   {
     if (glfwGetKey(window, GLFW_KEY_A)==GLFW_PRESS)
@@ -56,14 +58,14 @@ int main(int argc, char **argv)
 
     if (glfwGetKey(window, GLFW_KEY_W)==GLFW_PRESS)
     {
-      eye.x += cos(rotation)*0.1f;
-      eye.z += sin(rotation)*0.1f;
+      eye.x += cos(rotation) * 0.1f;
+      eye.z += sin(rotation) * 0.1f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_S)==GLFW_PRESS)
     {
-      eye.x -= cos(rotation)*0.1f;
-      eye.z -= sin(rotation)*0.1f;
+      eye.x -= cos(rotation) * 0.1f;
+      eye.z -= sin(rotation) * 0.1f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS)
@@ -87,7 +89,7 @@ int main(int argc, char **argv)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shipTexture.bind(0);
-    crateModel.draw(texturedShader, projectionMatrix, viewMatrix, centre);
+    shipModel.draw(texturedShader, projectionMatrix, viewMatrix, centre);
 
     CGL::error(__FILE__, __LINE__);
 

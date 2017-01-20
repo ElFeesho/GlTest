@@ -157,7 +157,7 @@ namespace CGL {
   GLTexture loadTexture(const std::string &pngFile){
     Texture texture = textureData(pngFile);
     error(__FILE__, __LINE__);
-    return GLTexture(texture.data, texture.width, texture.height);
+    return GLTexture(texture.data, texture.width, texture.height, texture.format == 4);
   }
 
   std::vector<std::string> splitString(std::string &value, char delimeter)
