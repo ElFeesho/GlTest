@@ -24,22 +24,26 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "GLVAO.h"
+#include "GLShader.h"
 
 class Model {
 public:
 	Model(GLVAO vao);
 
-	void setMatrix(glm::mat4 matrix);
+	void setPosition(float x, float y, float z);
+	void setRotation(float rx, float ry, float rz);
+	void setScale(float scale);
 
-	void setColour(float r, float g, float b);
-
-	void draw(GLuint shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos);
+	void draw(GLShader &shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos);
 
 private:
 	GLVAO _vao;
 	GLuint _vertexCount;
-	glm::vec4 _colour;
 	glm::mat4 _matrix;
+
+	glm::vec3 _position;
+	glm::vec3 _rotation;
+	float _scale;
 };
 
 #endif // MODEL_H

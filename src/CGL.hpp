@@ -5,8 +5,10 @@
 #include <vector>
 #include <sstream>
 
+#include "GLTexture.h"
 #include "pngloader.hpp"
 #include "GLVAO.h"
+#include "GLShader.h"
 
 namespace CGL {
 
@@ -77,21 +79,21 @@ namespace CGL {
 
   GLuint compileShader(GLuint shaderType, const std::string &programSource)
   {
-  GLuint shaderId = glCreateShader(shaderType);
-  const char *c_str = programSource.c_str();
-  glShaderSource(shaderId, 1, &c_str, nullptr);
-  glCompileShader(shaderId);
+    GLuint shaderId = glCreateShader(shaderType);
+    const char *c_str = programSource.c_str();
+    glShaderSource(shaderId, 1, &c_str, nullptr);
+    glCompileShader(shaderId);
 
-  GLint success;
-  GLchar infoLog[512];
-  glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-  if(!success)
-  {
-    glGetShaderInfoLog(shaderId, 512, nullptr, infoLog);
-    std::cout << "Shader Compilation Error:\n" << infoLog << std::endl;
-  }
+    GLint success;
+    GLchar infoLog[512];
+    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+    if(!success)
+    {
+      glGetShaderInfoLog(shaderId, 512, nullptr, infoLog);
+      std::cout << "Shader Compilation Error:\n" << infoLog << std::endl;
+    }
 
-  return shaderId;
+    return shaderId;
   }
 
   GLuint linkShaderProgram(GLuint vertexId, GLuint fragmentId)
@@ -111,21 +113,21 @@ namespace CGL {
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 
     if(!success) {
-	glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+      glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
 	    std::cout << "Program link error:\n" << infoLog << std::endl;
     }
     error(__FILE__, __LINE__);
     return shaderProgram;
   }
 
-  GLuint compileShaderProgram(const std::string &vertex, const std::string &fragment) {
+  GLShader compileShaderProgram(const std::string &vertex, const std::string &fragment) {
     std::string vertexProgram = readFile(vertex);
     std::string fragmentProgram = readFile(fragment);
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexProgram);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentProgram);;
 
-    return linkShaderProgram(vertexShader, fragmentShader);
+    return GLShader(linkShaderProgram(vertexShader, fragmentShader));
   }
 
   template<typename type, unsigned int count>
@@ -152,21 +154,10 @@ namespace CGL {
     return GLVAO(vertexCount);
   }
 
-  GLuint loadTexture(const std::string &pngFile){
+  GLTexture loadTexture(const std::string &pngFile){
     Texture texture = textureData(pngFile);
-        
-    GLuint textureId;
-    glGenTextures(1, &textureId);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture.data);
-    glGenerateMipmap(GL_TEXTURE_2D);
     error(__FILE__, __LINE__);
-    return textureId;
+    return GLTexture(texture.data, texture.width, texture.height);
   }
 
   std::vector<std::string> splitString(std::string &value, char delimeter)

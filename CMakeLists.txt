@@ -12,7 +12,11 @@ set(SOURCES
 	src/Model.cpp
 	src/Model.h
 	src/GLVAO.cpp
-	src/GLVAO.h)
+	src/GLVAO.h
+	src/GLTexture.cpp
+	src/GLTexture.h
+	src/GLShader.cpp
+	src/GLShader.h)
 
 find_package(glfw3)
 find_package(PNG)

@@ -16,48 +16,49 @@
  */
 
 #include "Model.h"
+#include "GLShader.h"
 
-Model::Model(GLVAO vao) : _vao(vao), _vertexCount(vao.vertexCount()), _colour(1.0f, 1.0f, 1.0f, 1.0f) {}
+#include <string>
 
-void Model::setMatrix(glm::mat4 matrix) {
-  _matrix = matrix;
+Model::Model(GLVAO vao) : _vao(vao), _vertexCount(vao.vertexCount()), _position{0.0f, 0.0f, 0.0f}, _rotation{0.0f,0.0f,0.0f}, _scale{1.0f} {}
+
+void Model::setPosition(float x, float y, float z) {
+  _position.x = x;
+  _position.y = y;
+  _position.z = z;
 }
 
-void Model::setColour(float r, float g, float b)
-{
-  _colour.x = r;
-  _colour.y = g;
-  _colour.z = b;
+void Model::setRotation(float rx, float ry, float rz) {
+  _rotation.x = rx;
+  _rotation.y = ry;
+  _rotation.z = rz;
 }
 
-void Model::draw(GLuint shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos) {
-
-  GLuint colour = glGetUniformLocation(shader, "colour");
-  GLuint texture = glGetUniformLocation(shader, "boundTexture");
-  GLuint projection = glGetUniformLocation(shader, "projection");
-  GLuint view = glGetUniformLocation(shader, "view");
-  GLuint model = glGetUniformLocation(shader, "model");
-  GLuint lightPosPos = glGetUniformLocation(shader, "lightPos");
-  glUseProgram(shader);
-  _vao.use([=](){
-    
-    if (colour != -1){
-      glUniform4fv(colour, 1, glm::value_ptr(_colour));
-    }
-    if (texture != -1){
-      glUniform1i(texture, 0);
-    }
-    if (lightPosPos != -1)
-    {
-      glUniform3f(lightPosPos, lightPos.x, lightPos.y+0.5f, lightPos.z);
-    }
-    
+void Model::setScale(float scale) {
+  _scale = scale;
+}
 
 
-    glUniformMatrix4fv(projection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-    glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-    glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(_matrix));
+void Model::draw(GLShader &shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos) {
 
-    glDrawElements(GL_TRIANGLES, _vao.vertexCount(), GL_UNSIGNED_INT, (void*)0);
+  _matrix = glm::translate(glm::mat4(1.0f), _position);
+  _matrix = glm::scale(_matrix, glm::vec3(_scale, _scale, _scale));
+  _matrix = glm::rotate(_matrix, _rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+  _matrix = glm::rotate(_matrix, _rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+  _matrix = glm::rotate(_matrix, _rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+  shader.use([&](){
+    _vao.use([&](){
+      
+      shader.setUniform("boundTexture", 0);
+      shader.setUniform("lightPos", lightPos.x, lightPos.y+0.5f, lightPos.z);
+      
+      shader.setUniform("projection", projectionMatrix);
+      shader.setUniform("view", viewMatrix);
+      shader.setUniform("model", _matrix);
+      
+      glDrawElements(GL_TRIANGLES, _vao.vertexCount(), GL_UNSIGNED_INT, (void*)0);
+    });
   });
+  
 }
