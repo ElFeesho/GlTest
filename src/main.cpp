@@ -15,89 +15,7 @@
 #include <math.h>
 #include "Model.h"
 
-class ParticleEmitter {
-  class Particle {
-  public:
-    Particle(glm::vec3 startPosition, glm::vec3 speed, int tick, int maxTick, float rotationSpeed) : _startPosition{startPosition}, _position{startPosition}, _speed{speed}, _tick{tick}, _maxTick{maxTick}, _rotation{0.0f}, _rotationSpeed{rotationSpeed} {
-
-    }
-
-    void tick() {
-      _position += _speed;
-      _rotation += _rotationSpeed;
-      _tick++;
-      if (_tick > _maxTick)
-      {
-        _tick = 0;
-        _position = _startPosition;
-      }
-    }
-
-    glm::vec3 &position() {
-      return _position;
-    }
-
-    float rotation() {
-      return _rotation;
-    }
-
-  private:
-    glm::vec3 _startPosition;
-    glm::vec3 _position;
-    glm::vec3 _speed;
-
-    int _tick;
-    int _maxTick;
-
-    float _rotation;
-    float _rotationSpeed;
-  };
-
-
-public:
-  ParticleEmitter(glm::vec3 direction, float spread, int totalParticles, float travelDistance) {
-    for(int i = 0; i < totalParticles; i++)
-    {
-      glm::vec3 dir(direction.x, direction.y, direction.z);
-      dir.x += spread;
-      dir.y += spread;
-      dir.z += spread;
-
-      std::cout << dir.x << " " << dir.y << " " << dir.z << std::endl;
-      _particles.emplace_back(glm::vec3(0.0f, 0.0f, 0.0f), dir/10.f, i, totalParticles, (rand()*360.f)/360.f * M_PI);
-    }
-  }
-
-  void draw(GLVAO &particleVao, GLShader &particleShader, GLTexture &particleTexture, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::mat4 origin) {
-    particleShader.use([&](){
-      particleShader.setUniform("colour", glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
-      particleShader.setUniform("textureId", 0);
-      particleShader.setUniform("projection", projectionMatrix);
-      particleTexture.bind(0);
-
-      glDisable(GL_DEPTH_TEST);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-      
-      particleVao.use([&](){
-        std::for_each(_particles.begin(), _particles.end(), [&](Particle &particle) {
-          particle.tick();
-          particleShader.setUniform("modelView", viewMatrix * glm::translate(origin, particle.position()) * glm::rotate(glm::mat4(1.0f), particle.rotation(), glm::vec3(0.0f, 0.0f, 1.0f)));
-          glDrawElements(GL_TRIANGLES, particleVao.vertexCount(), GL_UNSIGNED_INT, (void*)0);
-        });
-      });
-      glDisable(GL_BLEND);
-      glEnable(GL_DEPTH_TEST);
-    });
-  }
-
-private:
-  std::vector<Particle> _particles;
-
-  glm::vec3 _direction;
-  float _spread;
-  float _travelDistance;
-};
+#include "ParticleEmitter.h"
 
 GLVAO createParticle()
 {
@@ -132,12 +50,53 @@ GLVAO createParticle()
   return particle;
 }
 
+
+GLVAO createSkybox()
+{
+  GLVAO particle{36};
+
+  particle.use([](){
+    CGL::createBuffer(GL_ARRAY_BUFFER, std::vector<float>({
+       1.0f, -1.0f, -1.0f,
+       1.0f, -1.0f, 1.0f,
+       -1.0f, -1.0f, 1.0f,
+       -1.0f, -1.0f, -1.0f,
+       1.0f, 1.0f, -1.0f,
+       1.0f, 1.0f, 1.0f,
+       -1.0f, 1.0f, 1.0f,
+       -1.0f, 1.0f, -1.0
+    }));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    CGL::createBuffer(GL_ELEMENT_ARRAY_BUFFER, std::vector<GLuint>({
+      2-1, 4-1, 1-1,
+      8-1, 6-1, 5-1,
+      5-1, 2-1, 1-1,
+      6-1, 3-1, 2-1,
+      3-1, 8-1, 4-1,
+      1-1, 8-1, 5-1,
+      2-1, 3-1, 4-1,
+      8-1, 7-1, 6-1,
+      5-1, 6-1, 2-1,
+      6-1, 7-1, 3-1,
+      3-1, 7-1, 8-1,
+      1-1, 4-1, 8-1
+    }));
+
+    glEnableVertexAttribArray(0);
+
+  });
+
+  return particle;
+}
+
 int main(int argc, char **argv)
 {
   GLFWwindow *window = CGL::createWindow(640, 480, "gltest");
 
   glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
+  GLCubemapTexture skyboxTexture = CGL::loadCubemapTexture("space_u.png", "space_d.png", "space_l.png", "space_r.png", "space_f.png", "space_b.png");
   GLTexture shipTexture = CGL::loadTexture("cool_ship.png");
   GLTexture particleTexture = CGL::loadTexture("fire.png");
 
@@ -147,6 +106,12 @@ int main(int argc, char **argv)
   Model shipModel(ship);
   shipModel.setPosition(0.0f, 0.0f, 15.0f);
 
+  CGL::error(__FILE__, __LINE__);
+
+  GLShader skyboxShader = CGL::compileShaderProgram("src/skybox_vertex.glsl", "src/skybox_fragment.glsl");
+  CGL::error(__FILE__, __LINE__);
+
+  skyboxShader.locateUniforms({"projection", "view", "skybox"});
   CGL::error(__FILE__, __LINE__);
 
   GLShader texturedShader = CGL::compileShaderProgram("src/vertex.glsl", "src/texture_fragment.glsl");
@@ -170,6 +135,7 @@ int main(int argc, char **argv)
 
   ParticleEmitter emitter{glm::vec3(0.0f, 1.0f, 0.0f), 0.15f, 100, 20.0f};
 
+  GLVAO skyboxVao = createSkybox();
 
   while(!glfwWindowShouldClose(window))
   {
@@ -221,10 +187,22 @@ int main(int argc, char **argv)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shipTexture.bind(0);
-    shipModel.draw(texturedShader, projectionMatrix, viewMatrix, centre);
+    shipModel.draw(texturedShader, eye, projectionMatrix, viewMatrix, centre);
 
     emitter.draw(particle, particleShader, particleTexture, projectionMatrix, viewMatrix, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
     
+    glDepthFunc(GL_LEQUAL);
+    skyboxTexture.bind(0);
+    skyboxShader.use([&](){
+      skyboxVao.use([&](){
+        skyboxShader.setUniform("skybox", 0);
+        skyboxShader.setUniform("projection", projectionMatrix);
+        skyboxShader.setUniform("view", glm::mat4(glm::mat3(viewMatrix)) * glm::scale(glm::mat4(1.0f), glm::vec3(10.f, 10.f, 10.f)));
+        glDrawElements(GL_TRIANGLES, skyboxVao.vertexCount(), GL_UNSIGNED_INT, (void*)0);
+      });
+    });
+    glDepthFunc(GL_LESS);
+
     CGL::error(__FILE__, __LINE__);
 
     glfwSwapBuffers(window);

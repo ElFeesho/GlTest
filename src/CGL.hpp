@@ -9,6 +9,7 @@
 #include "pngloader.hpp"
 #include "GLVAO.h"
 #include "GLShader.h"
+#include "GLCubemapTexture.h"
 
 namespace CGL {
 
@@ -148,6 +149,17 @@ namespace CGL {
     Texture texture = textureData(pngFile);
     error(__FILE__, __LINE__);
     return GLTexture(texture.data, texture.width, texture.height, texture.format == 4);
+  }
+
+  GLCubemapTexture loadCubemapTexture(const std::string &top, const std::string &bottom, const std::string &left, const std::string &right, const std::string &front, const std::string &back){
+    Texture topTexture = textureData(top);
+    Texture bottomTexture = textureData(bottom);
+    Texture leftTexture = textureData(left);
+    Texture rightTexture = textureData(right);
+    Texture frontTexture = textureData(front);
+    Texture backTexture = textureData(back);
+    error(__FILE__, __LINE__);
+    return GLCubemapTexture(topTexture.width, topTexture.height, topTexture.data, bottomTexture.data, leftTexture.data, rightTexture.data, frontTexture.data, backTexture.data);
   }
 
   std::vector<std::string> splitString(std::string &value, char delimeter)

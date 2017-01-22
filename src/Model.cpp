@@ -38,7 +38,7 @@ void Model::setScale(float scale) {
   _scale = scale;
 }
 
-void Model::draw(GLShader &shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos) {
+void Model::draw(GLShader &shader, glm::vec3 camPosition, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos) {
 
   _matrix = glm::translate(glm::mat4(1.0f), _position);
   _matrix = glm::scale(_matrix, glm::vec3(_scale, _scale, _scale));
@@ -50,7 +50,8 @@ void Model::draw(GLShader &shader, glm::mat4 projectionMatrix, glm::mat4 viewMat
     _vao.use([&](){
       
       shader.setUniform("boundTexture", 0);
-      shader.setUniform("lightPos", lightPos.x, lightPos.y+0.5f, lightPos.z);
+      shader.setUniform("lightPos", lightPos);
+      shader.setUniform("camPos", camPosition);
       
       shader.setUniform("projection", projectionMatrix);
       shader.setUniform("view", viewMatrix);

@@ -34,7 +34,7 @@ public:
 	void setRotation(float rx, float ry, float rz);
 	void setScale(float scale);
 
-	void draw(GLShader &shader, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos);
+	void draw(GLShader &shader, glm::vec3 camPosition, glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 lightPos);
 
 private:
 	GLVAO _vao;

@@ -16,7 +16,11 @@ set(SOURCES
 	src/GLTexture.cpp
 	src/GLTexture.h
 	src/GLShader.cpp
-	src/GLShader.h)
+	src/GLShader.h
+	src/GLCubemapTexture.cpp
+	src/GLCubemapTexture.h
+	src/ParticleEmitter.cpp
+	src/ParticleEmitter.h)
 
 find_package(glfw3)
 find_package(PNG)
